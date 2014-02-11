@@ -1,0 +1,233 @@
+.clearfix
+  clearfix()
+
+#history
+  position absolute
+  clearfix()
+
+// MAKE THESE SANE
+body {
+  background-color: black;
+}
+
+#rainfall-timestamp {
+  line-height: 125%;
+}
+.counties {
+  fill: none;
+  stroke: #333;
+  stroke-linejoin: round;
+}
+
+div.inspector {
+  position: absolute;
+  text-align: center;
+  width: 80px;
+  height: 40px;
+  padding: 2px;
+  font: 12px sans-serif;
+  background: #E6DB74;
+  border: 1px solid white;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+div.inspector p {
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
+.menu {
+  top: 0;
+  padding-left: 1em;
+}
+.menu .data.button, .menu .launch.button, .menu .forcest.button{
+  display: none;
+  font-size: 1.5rem;
+}
+.ui.menu .item.button {
+  padding: .83em .5em;
+}
+
+.sidebar.menu {
+  top: 65px;
+  padding-bottom: 65px;
+}
+
+.sidebar.menu .item {
+  font-size: 1.7rem;
+}
+
+#main-panel {
+  width: 540px;
+  height: auto;
+  float: right;
+}
+
+.eva-box {
+  border-radius: 8px;
+  border: 4px solid #EE7A28;
+  color: #EE7A28;
+  z-index: 1001;
+  margin-top: 65px;
+}
+
+#metrics {
+  text-align: center;
+}
+#metrics .button b {
+    font-family:
+        "Hiragino Sans GB W6", HiraginoSansGB-W6,
+        "Lantinghei TC Demibold", "Heiti TC Medium",
+        "Microsoft Jhenghei Bold", FZLTXHB--B51-0,
+        STHeitiTC-Medium, MicrosoftJhengHeiBold, "Lantinghei
+        SC Demibold", "Heiti SC Medium", "Microsoft YaHei Bold",
+        "FZLTZHK--GBK1-0", STHeitiSC-Medium,
+        MicrosoftYaHei-Bold, sans-serif;
+}
+#metrics .button {
+  line-height: 120%;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: normal;
+  height: 7ex;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.eva-box h2 {
+  font-family: "YuMincho Demibold", "Hiragino Mincho ProN W6", "Hiragino Mincho Pro W6", YuMin-Demibold, HiraMinProN-W6, HiraMinPro-W6, serif;
+  font-size: 96px;
+  font-weight: bolder;
+  text-align: center;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.eva-box h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 24px;
+  font-weight: normal;
+  text-align: center;
+  margin: 20px 0px 0px 0px;
+  background-color: #EE7A28;
+  color: black;
+}
+
+#rainfall-box {
+  position: relative;
+  margin: 20px auto 0 20px;
+  width: 500px;
+}
+
+#about {
+  margin-top: 1em;
+  text-align: center;
+}
+
+#about a {
+  color: #EE7A28;
+}
+
+div.unit {
+  text-align: right;
+  margin-right:22px;
+}
+
+#forecast {
+  padding: 5px 5px 0 5px;
+}
+
+#info-panel {
+  display: none;
+  position: absolute;
+  padding: 10px;
+  margin: 20px;
+  top: 80px;
+  background-color: rgba(33,33,33,0.9);
+}
+
+canvas {
+  z-index: -1;
+}
+
+svg {
+  z-index: 1;
+}
+
+@media screen and (max-width: 998px) {
+  .menu .data.button, .menu .launch.button, .menu .forcest.button {
+    display: block;
+  }
+  #main-panel {
+    position: absolute;
+    background-color: rgba(33,33,33,0.8);
+    display: none;
+    margin-left: 5em;
+  }
+  canvas {
+    float: none;
+  }
+}
+
+@media screen and (max-width: 540px) {
+  #main-panel {
+    width: 400px;
+    margin-left: 5px;
+  }
+  .eva-box h2 {
+    font-size: 72px;
+  }
+  #rainfall-box {
+    width: 400px;
+  }
+  .seven-segment {
+    margin: 0 2px;
+    width: 80px;
+  }
+  .seven-segment .a, .seven-segment .d, .seven-segment .g .top, .seven-segment .g .bottom {
+    width: 32px;
+  }
+  .seven-segment .b, .seven-segment .c {
+    left: 64px;
+  }
+  .seven-segment .g {
+    left: 13.5px;
+  }
+
+  #forecast {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 360px) {
+  #main-panel {
+    width: 340px;
+    height: 440px;
+    margin-left: -170px;
+    left: 50%;
+  }
+  .eva-box h2 {
+    font-size: 72px;
+  }
+  #rainfall-box {
+    width: 340px;
+    margin-left: -170px;
+    left: 50%;
+  }
+  .seven-segment {
+    margin: 0 2px;
+    width: 70px;
+  }
+  .seven-segment .a, .seven-segment .d, .seven-segment .g .top, .seven-segment .g .bottom {
+    width: 20px;
+  }
+  .seven-segment .b, .seven-segment .c {
+    left: 50px;
+  }
+  .seven-segment .g {
+    left: 13.5px;
+  }
+  #forecast {
+    display: none;
+  }
+}
