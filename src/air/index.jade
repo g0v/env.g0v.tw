@@ -1,0 +1,99 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    link(rel='stylesheet', type='text/css', media='all', href='/seven-segment.css')
+    link(rel='stylesheet', type='text/css', media='all', href='//cdnjs.cloudflare.com/ajax/libs/semantic-ui/0.10.0/css/semantic.min.css')
+    link(href='http://fonts.googleapis.com/css?family=Orbitron', rel='stylesheet', type='text/css')
+    link(rel='stylesheet', type='text/css', media='all', href='/css/air.css')
+    script(src='//cdnjs.cloudflare.com/ajax/libs/d3/3.3.11/d3.min.js')
+    script(src='//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js')
+    script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js')
+    script(src='//cdnjs.cloudflare.com/ajax/libs/semantic-ui/0.10.0/javascript/semantic.min.js')
+    script(src='/air.js')
+  body
+    .ui.fixed.inverted.transparent.menu(style='left: 0;')
+      a.left.floated.item.launch.button(style='font-size: 1.5rem;')
+        i.list.icon
+        | 測站
+      a.right.floated.item.forcest.button(style='font-size: 1.5rem;')
+        i.info.icon
+      a.right.floated.item.data.button(style='font-size: 1.5rem;')
+        | 數據
+    #list.ui.vertical.floating.inverted.transparent.sidebar.menu
+    #main-panel.eva-box
+      #forecast
+      #metrics
+        a.psi.ui.button(title='測量空氣中的可吸入微粒、二氧化硫、二氧化氮、一氧化碳及臭氧等含量，再換算成副指標值，以當日各副指標值之最大值為該地方當日的空氣污染指標值。')
+          b 空污指標
+          br
+          sub  
+          | PSI
+          sub  
+        a.o3.ui.button(title='具強氧化力，對呼吸系統具刺激性，能引起咳嗽、氣喘、頭痛、疲倦及肺部之傷害，特別是對小孩、老人、病人或戶外運動者有較大影響。')
+          b 臭氧濃度
+          br
+          | O
+          sub
+            | 3
+            sub
+        a.pm10.ui.button(title='粒徑小於10微米，能深入肺部深處，如附著其他污染物，則將加深對呼吸系統之危害。')
+          b 可吸入微粒
+          br
+          | PM
+          sub 10
+        a.pm25.ui.button(title='粒徑小於2.5微米，能深入細支氣管和肺泡，直接影響肺的通氣功能，且吸附於肺泡之後很難掉落。')
+          b 細微粒
+          br
+          | PM
+          sub 2.5
+      h3#rainfall-timestamp LOADING…
+      h2#station-name 懸浮微粒
+      #rainfall-box
+        .seven-segment
+          .a
+          .b
+          .c
+          .d
+          .e
+          .f
+          .g
+            .top
+            .bottom
+        .seven-segment
+          .a
+          .b
+          .c
+          .d
+          .e
+          .f
+          .g
+            .top
+            .bottom
+        .seven-segment
+          .a
+          .b
+          .c
+          .d
+          .e
+          .f
+          .g
+            .top
+            .bottom
+        .seven-segment
+          .a
+          .b
+          .c
+          .d
+          .e
+          .f
+          .g
+            .top
+            .bottom
+        .unit  μg/m³
+      #about
+        | 資料來源：環保署
+        a(target='_blank', href='http://opendata.epa.gov.tw/Data/Contents/AQX/') 空氣品質即時污染指標
+    #info-panel.eva-box
+    #history
