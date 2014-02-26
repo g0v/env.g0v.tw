@@ -355,7 +355,7 @@ draw-all = (_stations) ->
   draw-stations stations
   <- d3.csv piped 'http://opendata.epa.gov.tw/ws/Data/AQX/?$orderby=SiteName&$skip=0&$top=1000&format=csv'
   epa-data := {[e.SiteName, e] for e in it}
-  set-metric \PM10
+  set-metric \PM2.5
   $ \.psi .click ->
     set-metric \PSI
   $ \.pm10 .click ->
