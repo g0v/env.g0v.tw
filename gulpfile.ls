@@ -56,6 +56,7 @@ gulp.task \watch, ->
   gulp.watch \src/**/*.ls, <[ls]>
   gulp.watch \src/**/*.css, <[css]>
   gulp.watch \src/**/*.styl, <[styl]>
+  gulp.watch \src/img/**, <[img]>
 
 gulp.task \build <[ html ls css files img]>
 gulp.task \default <[ build express ]>
