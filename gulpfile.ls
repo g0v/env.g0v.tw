@@ -34,6 +34,10 @@ gulp.task 'files' ->
   gulp.src <[src/**/*.json src/**/*.csv]>
     .pipe gulp.dest "#build-path"
 
+gulp.task 'img' ->
+  gulp.src 'src/img/**'
+    .pipe gulp.dest '_public/img'
+
 gulp.task \express, ->
   require! express
   app = express!
@@ -53,6 +57,6 @@ gulp.task \watch, ->
   gulp.watch \src/**/*.css, <[css]>
   gulp.watch \src/**/*.styl, <[styl]>
 
-gulp.task \build <[ html ls css files]>
+gulp.task \build <[ html ls css files img]>
 gulp.task \default <[ build express ]>
 gulp.task \dev <[ build express watch ]>

@@ -191,6 +191,20 @@ set-metric = (name) ->
       .style \fill \#AAAAAA
       .style \font-size \10px
 
+  svg.selectAll("image").data [0]
+    ..enter!append \svg:image
+      .attr \xlink:href '/img/g0v-only.svg'
+      .attr \x 20 + x-off
+      .attr \y -10 + y-off
+      .attr \width 60
+      .attr \height 30
+    ..enter!append \text
+      .attr \x 80 + x-off
+      .attr \y 195 + y-off
+      .text 'g0v.tw'
+      .style \fill \#000000
+      .style \font-size \10px
+
   draw-heatmap stations
 
 draw-segment = (d, i) ->
