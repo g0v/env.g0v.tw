@@ -190,12 +190,14 @@ set-metric = (name) ->
       .text -> &0 + current-unit
       .style \fill \#AAAAAA
       .style \font-size \10px
+      
+  svg.selectAll("image").data [0]
     ..enter!append \svg:image
-      .attr \xlink:href '/img/g0v-s.png'
-      .attr \x 40 + x-off
-      .attr \y 20 + y-off
-      .attr \width 60
-      .attr \height 30
+      .attr \xlink:href '/img/g0v-2line-black-s.png'
+      .attr \x 20 + x-off
+      .attr \y 1 + y-off
+      .attr \width 100
+      .attr \height 60
     ..enter!append \text
       .attr \x 43 + x-off
       .attr \y 30*7 + 5 + y-off
