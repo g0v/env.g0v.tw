@@ -197,11 +197,11 @@ set-metric = (name) ->
       .attr \width 60
       .attr \height 30
     ..enter!append \text
-      .attr \x 60 + x-off
+      .attr \x 43 + x-off
       .attr \y 30*7 + 5 + y-off
       .text 'env.g0v.tw'
       .style \fill \#AAAAAA
-      .style \font-size \10px
+      .style \font-size \13px
 
   draw-heatmap stations
 
