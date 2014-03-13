@@ -104,7 +104,7 @@
       });
     };
     setMetric = function(name){
-      var ref$, y, xOff, yOff, x$;
+      var ref$, y, xOff, yOff, x$, y$;
       currentMetric = name;
       colorOf = d3.scale.linear().domain((ref$ = metrics[name].domain) != null
         ? ref$
@@ -126,8 +126,9 @@
       }).attr('d', '.35em').text(function(){
         return arguments[0] + currentUnit;
       }).style('fill', '#AAAAAA').style('font-size', '10px');
-      x$.enter().append('svg:image').attr('xlink:href', '/img/g0v-s.png').attr('x', 40 + xOff).attr('y', 20 + yOff).attr('width', 60).attr('height', 30);
-      x$.enter().append('text').attr('x', 43 + xOff).attr('y', 30 * 7 + 5 + yOff).text('env.g0v.tw').style('fill', '#AAAAAA').style('font-size', '13px');
+      y$ = svg.selectAll("image").data([0]);
+      y$.enter().append('svg:image').attr('xlink:href', '/img/g0v-2line-black-s.png').attr('x', 20 + xOff).attr('y', 1 + yOff).attr('width', 100).attr('height', 60);
+      y$.enter().append('text').attr('x', 43 + xOff).attr('y', 30 * 7 + 5 + yOff).text('env.g0v.tw').style('fill', '#AAAAAA').style('font-size', '13px');
       return drawHeatmap(stations);
     };
     drawSegment = function(d, i){
