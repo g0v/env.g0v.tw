@@ -72,6 +72,36 @@ d3.select \#history
   .attr \width, 300
   .attr \height, 100
 
+x-off = width - 100 - 40
+y-off = height - (32*7) - 40
+
+legend = svg.append \g
+  .attr \class, \legend
+  .attr "transform" ->
+    "translate(#{x-off},#{y-off})"
+
+legend
+  ..append \rect
+    .attr \width 100
+    .attr \height 32*7
+    .attr \x 20
+    .attr \y 0
+    .style \fill \#000000
+    .style \stroke \#555555
+    .style \stroke-width 2
+  ..append \svg:image
+    .attr \xlink:href '/img/g0v-2line-black-s.png'
+    .attr \x 20
+    .attr \y 1
+    .attr \width 100
+    .attr \height 60
+  ..append \text
+    .attr \x 43
+    .attr \y 30*7 + 5
+    .text 'env.g0v.tw'
+    .style \fill \#AAAAAA
+    .style \font-size \13px
+
 $ document .ready ->
   panel-width = $ \#main-panel .width!
   if window-width - panel-width > 1200
@@ -162,48 +192,26 @@ set-metric = (name) ->
 
   add-list stations
 
-  # calculate the legend
-  y = 0
-  x-off = width - 100 - 40
-  y-off = height - (32*7) - 40
-
-  svg.append \rect
-    .attr \width 100
-    .attr \height 32*7
-    .attr \x 20 + x-off
-    .attr \y y-off
-    .style \fill \#000000
-    .style \stroke \#555555
-    .style \stroke-width \2
-
-  svg.selectAll("svg").data color-of.domain!
-    ..enter!append \rect
-      .attr \width 20
-      .attr \height 20
-      .attr \x 30 + x-off
-      .attr \y -> (&1+2)*30 +y-off
-      .style \fill (d) -> color-of d
-    ..enter!append \text
-      .attr \x 55 + x-off
-      .attr \y -> (&1+2)*30+15 + y-off
-      .attr \d \.35em
-      .text -> &0 + current-unit
-      .style \fill \#AAAAAA
-      .style \font-size \10px
-      
-  svg.selectAll("image").data [0]
-    ..enter!append \svg:image
-      .attr \xlink:href '/img/g0v-2line-black-s.png'
-      .attr \x 20 + x-off
-      .attr \y 1 + y-off
-      .attr \width 100
-      .attr \height 60
-    ..enter!append \text
-      .attr \x 43 + x-off
-      .attr \y 30*7 + 5 + y-off
-      .text 'env.g0v.tw'
-      .style \fill \#AAAAAA
-      .style \font-size \13px
+  legend.selectAll("g.entry").data color-of.domain!
+    ..enter!append \g .attr \class \entry
+      ..append \rect
+      ..append \text
+    ..each (d, i) ->
+      d3.select @
+        ..select 'rect'
+          .attr \width 20
+          .attr \height 20
+          .attr \x 30
+          .attr \y -> (i+2)*30
+          .style \fill (d) -> color-of d
+        ..select \text
+          .attr \x 55
+          .attr \y -> (i+2)*30+15
+          .attr \d \.35em
+          .text -> &0 + current-unit
+          .style \fill \#AAAAAA
+          .style \font-size \10px
+    ..exit!remove!
 
   draw-heatmap stations
 
