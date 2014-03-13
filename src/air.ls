@@ -165,13 +165,13 @@ set-metric = (name) ->
   # calculate the legend
   y = 0
   x-off = width - 100 - 40
-  y-off = height - (32*5) - 40
+  y-off = height - (32*7) - 40
 
   svg.append \rect
     .attr \width 100
-    .attr \height 32*5
+    .attr \height 32*7
     .attr \x 20 + x-off
-    .attr \y 20 + y-off
+    .attr \y y-off
     .style \fill \#000000
     .style \stroke \#555555
     .style \stroke-width \2
@@ -181,15 +181,27 @@ set-metric = (name) ->
       .attr \width 20
       .attr \height 20
       .attr \x 30 + x-off
-      .attr \y -> (&1+1)*30 +y-off
+      .attr \y -> (&1+2)*30 +y-off
       .style \fill (d) -> color-of d
     ..enter!append \text
       .attr \x 55 + x-off
-      .attr \y -> (&1+1)*30+15 + y-off
+      .attr \y -> (&1+2)*30+15 + y-off
       .attr \d \.35em
       .text -> &0 + current-unit
       .style \fill \#AAAAAA
       .style \font-size \10px
+    ..enter!append \svg:image
+      .attr \xlink:href '/img/g0v-s.png'
+      .attr \x 40 + x-off
+      .attr \y 20 + y-off
+      .attr \width 60
+      .attr \height 30
+    ..enter!append \text
+      .attr \x 43 + x-off
+      .attr \y 30*7 + 5 + y-off
+      .text 'env.g0v.tw'
+      .style \fill \#AAAAAA
+      .style \font-size \13px
 
   draw-heatmap stations
 
