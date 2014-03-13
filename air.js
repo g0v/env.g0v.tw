@@ -27,7 +27,7 @@
     }
   };
   $(function(){
-    var windowWidth, width, marginTop, height, wrapper, canvas, svg, g, minLatitude, maxLatitude, minLongitude, maxLongitude, dy, dx, proj, path, drawTaiwan, ConvertDMSToDD, drawStations, currentMetric, currentUnit, colorOf, stations, setMetric, drawSegment, addList, epaData, samples, distanceSquare, idwInterpolate, yPixel, plotInterpolatedData, updateSevenSegment, drawHeatmap, drawAll, zoom;
+    var windowWidth, width, marginTop, height, wrapper, canvas, svg, g, xOff, yOff, legend, x$, minLatitude, maxLatitude, minLongitude, maxLongitude, dy, dx, proj, path, drawTaiwan, ConvertDMSToDD, drawStations, currentMetric, currentUnit, colorOf, stations, setMetric, drawSegment, addList, epaData, samples, distanceSquare, idwInterpolate, yPixel, plotInterpolatedData, updateSevenSegment, drawHeatmap, drawAll, zoom;
     windowWidth = $(window).width();
     if (windowWidth > 998) {
       width = $(window).height() / 4 * 3;
@@ -45,6 +45,15 @@
     svg = d3.select('body').append('svg').attr('width', width).attr('height', height).style('position', 'absolute').style('top', '0px').style('left', '0px').style('margin-top', marginTop);
     g = svg.append('g').attr('id', 'taiwan').attr('class', 'counties');
     d3.select('#history').style('top', '-300px').style('left', '-100px').append('svg').attr('width', 300).attr('height', 100);
+    xOff = width - 100 - 40;
+    yOff = height - 32 * 7 - 40;
+    legend = svg.append('g').attr('class', 'legend').attr("transform", function(){
+      return "translate(" + xOff + "," + yOff + ")";
+    });
+    x$ = legend;
+    x$.append('rect').attr('width', 100).attr('height', 32 * 7).attr('x', 20).attr('y', 0).style('fill', '#000000').style('stroke', '#555555').style('stroke-width', 2);
+    x$.append('svg:image').attr('xlink:href', '/img/g0v-2line-black-s.png').attr('x', 20).attr('y', 1).attr('width', 100).attr('height', 60);
+    x$.append('text').attr('x', 33).attr('y', 30 * 7 + 10).text('env.g0v.tw').style('fill', '#EEEEEE').style('font-size', '13px').style('font-family', 'Orbitron');
     $(document).ready(function(){
       var panelWidth;
       panelWidth = $('#main-panel').width();
@@ -104,31 +113,33 @@
       });
     };
     setMetric = function(name){
-      var ref$, y, xOff, yOff, x$, y$;
+      var ref$, x$, y$;
       currentMetric = name;
       colorOf = d3.scale.linear().domain((ref$ = metrics[name].domain) != null
         ? ref$
         : [0, 50, 100, 200, 300]).range([d3.hsl(100, 1.0, 0.6), d3.hsl(60, 1.0, 0.6), d3.hsl(30, 1.0, 0.6), d3.hsl(0, 1.0, 0.6), d3.hsl(0, 1.0, 0.1)]);
       currentUnit = (ref$ = metrics[name].unit) != null ? ref$ : '';
       addList(stations);
-      y = 0;
-      xOff = width - 100 - 40;
-      yOff = height - 32 * 7 - 40;
-      svg.append('rect').attr('width', 100).attr('height', 32 * 7).attr('x', 20 + xOff).attr('y', yOff).style('fill', '#000000').style('stroke', '#555555').style('stroke-width', '2');
-      x$ = svg.selectAll("svg").data(colorOf.domain());
-      x$.enter().append('rect').attr('width', 20).attr('height', 20).attr('x', 30 + xOff).attr('y', function(){
-        return (arguments[1] + 2) * 30 + yOff;
-      }).style('fill', function(d){
-        return colorOf(d);
+      x$ = legend.selectAll("g.entry").data(colorOf.domain());
+      y$ = x$.enter().append('g').attr('class', 'entry');
+      y$.append('rect');
+      y$.append('text');
+      x$.each(function(d, i){
+        var x$;
+        x$ = d3.select(this);
+        x$.select('rect').attr('width', 20).attr('height', 20).attr('x', 30).attr('y', function(){
+          return (i + 2) * 30;
+        }).style('fill', function(d){
+          return colorOf(d);
+        });
+        x$.select('text').attr('x', 55).attr('y', function(){
+          return (i + 2) * 30 + 15;
+        }).attr('d', '.35em').text(function(){
+          return arguments[0] + currentUnit;
+        }).style('fill', '#AAAAAA').style('font-size', '10px');
+        return x$;
       });
-      x$.enter().append('text').attr('x', 55 + xOff).attr('y', function(){
-        return (arguments[1] + 2) * 30 + 15 + yOff;
-      }).attr('d', '.35em').text(function(){
-        return arguments[0] + currentUnit;
-      }).style('fill', '#AAAAAA').style('font-size', '10px');
-      y$ = svg.selectAll("image").data([0]);
-      y$.enter().append('svg:image').attr('xlink:href', '/img/g0v-2line-black-s.png').attr('x', 20 + xOff).attr('y', 1 + yOff).attr('width', 100).attr('height', 60);
-      y$.enter().append('text').attr('x', 43 + xOff).attr('y', 30 * 7 + 5 + yOff).text('env.g0v.tw').style('fill', '#AAAAAA').style('font-size', '13px');
+      x$.exit().remove();
       return drawHeatmap(stations);
     };
     drawSegment = function(d, i){
