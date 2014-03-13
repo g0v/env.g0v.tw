@@ -96,11 +96,12 @@ legend
     .attr \width 100
     .attr \height 60
   ..append \text
-    .attr \x 43
-    .attr \y 30*7 + 5
+    .attr \x 33
+    .attr \y 30*7 + 10
     .text 'env.g0v.tw'
-    .style \fill \#AAAAAA
+    .style \fill \#EEEEEE
     .style \font-size \13px
+    .style \font-family \Orbitron
 
 $ document .ready ->
   panel-width = $ \#main-panel .width!
