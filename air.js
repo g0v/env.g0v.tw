@@ -113,19 +113,21 @@
       addList(stations);
       y = 0;
       xOff = width - 100 - 40;
-      yOff = height - 32 * 5 - 40;
-      svg.append('rect').attr('width', 100).attr('height', 32 * 5).attr('x', 20 + xOff).attr('y', 20 + yOff).style('fill', '#000000').style('stroke', '#555555').style('stroke-width', '2');
+      yOff = height - 32 * 7 - 40;
+      svg.append('rect').attr('width', 100).attr('height', 32 * 7).attr('x', 20 + xOff).attr('y', yOff).style('fill', '#000000').style('stroke', '#555555').style('stroke-width', '2');
       x$ = svg.selectAll("svg").data(colorOf.domain());
       x$.enter().append('rect').attr('width', 20).attr('height', 20).attr('x', 30 + xOff).attr('y', function(){
-        return (arguments[1] + 1) * 30 + yOff;
+        return (arguments[1] + 2) * 30 + yOff;
       }).style('fill', function(d){
         return colorOf(d);
       });
       x$.enter().append('text').attr('x', 55 + xOff).attr('y', function(){
-        return (arguments[1] + 1) * 30 + 15 + yOff;
+        return (arguments[1] + 2) * 30 + 15 + yOff;
       }).attr('d', '.35em').text(function(){
         return arguments[0] + currentUnit;
       }).style('fill', '#AAAAAA').style('font-size', '10px');
+      x$.enter().append('svg:image').attr('xlink:href', '/img/g0v-s.png').attr('x', 40 + xOff).attr('y', 20 + yOff).attr('width', 60).attr('height', 30);
+      x$.enter().append('text').attr('x', 43 + xOff).attr('y', 30 * 7 + 5 + yOff).text('env.g0v.tw').style('fill', '#AAAAAA').style('font-size', '13px');
       return drawHeatmap(stations);
     };
     drawSegment = function(d, i){
