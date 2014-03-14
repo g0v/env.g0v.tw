@@ -27,7 +27,7 @@
     }
   };
   $(function(){
-    var windowWidth, width, marginTop, height, wrapper, canvas, svg, g, xOff, yOff, legend, x$, minLatitude, maxLatitude, minLongitude, maxLongitude, dy, dx, proj, path, drawTaiwan, ConvertDMSToDD, drawStations, currentMetric, currentUnit, colorOf, stations, setMetric, drawSegment, addList, epaData, samples, distanceSquare, idwInterpolate, yPixel, plotInterpolatedData, updateSevenSegment, drawHeatmap, drawAll, zoom;
+    var windowWidth, width, marginTop, height, wrapper, canvas, svg, g, history, xOff, yOff, legend, x$, minLatitude, maxLatitude, minLongitude, maxLongitude, dy, dx, proj, path, drawTaiwan, ConvertDMSToDD, drawStations, currentMetric, currentUnit, colorOf, stations, setMetric, drawSegment, addList, epaData, samples, distanceSquare, idwInterpolate, yPixel, plotInterpolatedData, updateSevenSegment, drawHeatmap, setupHistory, drawAll, zoom;
     windowWidth = $(window).width();
     if (windowWidth > 998) {
       width = $(window).height() / 4 * 3;
@@ -44,7 +44,7 @@
     canvas.scale = 1;
     svg = d3.select('body').append('svg').attr('width', width).attr('height', height).style('position', 'absolute').style('top', '0px').style('left', '0px').style('margin-top', marginTop);
     g = svg.append('g').attr('id', 'taiwan').attr('class', 'counties');
-    d3.select('#history').style('top', '-300px').style('left', '-100px').append('svg').attr('width', 300).attr('height', 100);
+    history = d3.select('#history').style('top', '-300px').style('left', '-100px').append('svg').attr('id', 'historysvg').attr('width', 300).attr('height', 100);
     xOff = width - 100 - 40;
     yOff = height - 32 * 7 - 40;
     legend = svg.append('g').attr('class', 'legend').attr("transform", function(){
@@ -283,11 +283,58 @@
         ref$ = d3.event, x = ref$.x, y = ref$.y;
         d3.select('#history').style('left', x + 'px').style('top', y + 'px');
         sitecode = d.SITE_CODE;
-        return d3.csv(piped("http://graphite.gugod.org/render/?_salt=1392034055.328&lineMode=connected&from=-24hours&target=epa.aqx.site_code." + sitecode + ".pm25&format=csv"), function(data){
-          return console.log(data);
+        return d3.xhr(piped("http://graphite.gugod.org/render/?_salt=1392034055.328&lineMode=connected&from=-24hours&target=epa.aqx.site_code." + sitecode + ".pm25&format=csv"), function(err, req){
+          var datum, value, date;
+          datum = d3.csv.parseRows(req.responseText, function(arg$){
+            var _, date, value;
+            _ = arg$[0], date = arg$[1], value = arg$[2];
+            return {
+              date: date,
+              value: parseFloat(value)
+            };
+          });
+          return history.chart.load({
+            columns: [
+              ['pm2.5'].concat((function(){
+                var i$, ref$, len$, results$ = [];
+                for (i$ = 0, len$ = (ref$ = datum).length; i$ < len$; ++i$) {
+                  value = ref$[i$].value;
+                  results$.push(value);
+                }
+                return results$;
+              }())), ['x'].concat((function(){
+                var i$, ref$, len$, results$ = [];
+                for (i$ = 0, len$ = (ref$ = datum).length; i$ < len$; ++i$) {
+                  date = ref$[i$].date;
+                  results$.push(date);
+                }
+                return results$;
+              }()))
+            ]
+          });
         });
       });
       return plotInterpolatedData();
+    };
+    setupHistory = function(){
+      var chart;
+      chart = c3.generate({
+        bindto: '#historysvg',
+        data: {
+          x: 'x',
+          x_format: '%Y-%m-%d %H:%M:%S',
+          columns: [['x', '2014-01-01 00:00:00'], ['pm2.5', 0]]
+        },
+        legend: {
+          show: false
+        },
+        axis: {
+          x: {
+            type: 'timeseries'
+          }
+        }
+      });
+      return history.chart = chart;
     };
     drawAll = function(_stations){
       var res$, i$, len$, s;
@@ -324,6 +371,7 @@
         });
       });
     };
+    setupHistory();
     zoom = d3.behavior.zoom().on('zoom', function(){
       g.attr('transform', 'translate(' + d3.event.translate.join(',') + ')scale(' + d3.event.scale + ')');
       g.selectAll('path').attr('d', path.projection(proj));
