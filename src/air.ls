@@ -65,10 +65,11 @@ g = svg.append \g
       .attr \id, \taiwan
       .attr \class, \counties
 
-d3.select \#history
+history = d3.select \#history
   .style \top, \-300px
   .style \left, \-100px
   .append \svg
+  .attr \id \historysvg
   .attr \width, 300
   .attr \height, 100
 
@@ -363,11 +364,31 @@ draw-heatmap = (stations) ->
         .style \top y + \px
 
       sitecode = d.SITE_CODE
-      data <- d3.csv piped "http://graphite.gugod.org/render/?_salt=1392034055.328&lineMode=connected&from=-24hours&target=epa.aqx.site_code.#{sitecode}.pm25&format=csv"
-      console.log data
+      err, req <- d3.xhr piped "http://graphite.gugod.org/render/?_salt=1392034055.328&lineMode=connected&from=-24hours&target=epa.aqx.site_code.#{sitecode}.pm25&format=csv"
+      datum = d3.csv.parseRows req.responseText, ([_, date, value]) ->
+        { date, value: parse-float value}
+      history.chart.load columns: [
+        ['pm2.5'] ++ [value for {value} in datum]
+        ['x'] ++ [date for {date} in datum]
+      ]
 
   # plot interpolated value
   plot-interpolated-data!
+
+setup-history = ->
+  chart = c3.generate do
+    bindto: '#historysvg'
+    data:
+      x: 'x'
+      x_format: '%Y-%m-%d %H:%M:%S'
+      columns: [
+        ['x', '2014-01-01 00:00:00']
+        ['pm2.5', 0]
+      ]
+    legend: {-show}
+    axis:
+      x: {type : 'timeseries' }
+  history.chart = chart
 
 draw-all = (_stations) ->
   stations := for s in _stations
@@ -387,6 +408,8 @@ draw-all = (_stations) ->
     set-metric \PM2.5
   $ \.o3 .click ->
     set-metric \O3
+
+setup-history!
 
 zoom = d3.behavior.zoom!
   .on \zoom ->
