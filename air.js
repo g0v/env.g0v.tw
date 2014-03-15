@@ -294,6 +294,9 @@
               value: parseFloat(value)
             };
           });
+          if (!datum.length) {
+            return;
+          }
           history.chart.load({
             columns: [
               ['pm2.5'].concat((function(){
