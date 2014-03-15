@@ -359,8 +359,8 @@ draw-heatmap = (stations) ->
         \#FFFFFF
     .on \mouseover (d, i) ->
       draw-segment d, i
-      {x, y} = d3.event
-      d3.select \#history
+      {clientX: x, clientY: y} = d3.event
+      history
         .style \left x + \px
         .style \top y + \px
 
