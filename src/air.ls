@@ -438,10 +438,10 @@ if localStorage.countiestopo and localStorage.stations
   svg.call zoom
 else
   countiestopo <- d3.json "/twCounty2010.topo.json"
-  localStorage.countiestopo = JSON.stringify countiestopo
+  try localStorage.countiestopo = JSON.stringify countiestopo
   draw-taiwan countiestopo
   stations <- d3.csv "/epa-site.csv"
-  localStorage.stations = JSON.stringify stations
+  try localStorage.stations = JSON.stringify stations
   draw-all stations
 do
   forecast <- d3.csv piped 'http://opendata.epa.gov.tw/ws/Data/AQF/?$orderby=AreaName&$skip=0&$top=1000&format=csv'
