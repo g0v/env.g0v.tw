@@ -397,10 +397,14 @@
       }, 1);
     } else {
       d3.json("/twCounty2010.topo.json", function(countiestopo){
-        localStorage.countiestopo = JSON.stringify(countiestopo);
+        try {
+          localStorage.countiestopo = JSON.stringify(countiestopo);
+        } catch (e$) {}
         drawTaiwan(countiestopo);
         return d3.csv("/epa-site.csv", function(stations){
-          localStorage.stations = JSON.stringify(stations);
+          try {
+            localStorage.stations = JSON.stringify(stations);
+          } catch (e$) {}
           return drawAll(stations);
         });
       });
