@@ -31,7 +31,7 @@ gulp.task 'styl' ->
   .pipe gulp-livereload server
 
 gulp.task 'files' ->
-  gulp.src <[src/**/*.json src/**/*.csv vendor/**/*.js]>
+  gulp.src <[src/**/*.json src/**/*.csv vendor/**]>
     .pipe gulp.dest "#build-path"
 
 gulp.task 'img' ->
