@@ -44,7 +44,7 @@
     canvas.scale = 1;
     svg = d3.select('body').append('svg').attr('width', width).attr('height', height).style('position', 'absolute').style('top', '0px').style('left', '0px').style('margin-top', marginTop);
     g = svg.append('g').attr('id', 'taiwan').attr('class', 'counties');
-    history = d3.select('#history').style('top', '-300px').style('left', '-100px').append('svg').attr('id', 'historysvg').attr('width', 300).attr('height', 100);
+    history = d3.select('#history').style('top', '-400px').style('left', '-200px').style('width', '400px').style('height', '200px').style('z-index', 100).append('svg');
     xOff = width - 100 - 40;
     yOff = height - 32 * 7 - 40;
     legend = svg.append('g').attr('class', 'legend').attr("transform", function(){
@@ -294,7 +294,7 @@
               value: parseFloat(value)
             };
           });
-          return history.chart.load({
+          history.chart.load({
             columns: [
               ['pm2.5'].concat((function(){
                 var i$, ref$, len$, results$ = [];
@@ -313,6 +313,7 @@
               }()))
             ]
           });
+          return history.chart.resize();
         });
       });
       return plotInterpolatedData();
@@ -320,7 +321,7 @@
     setupHistory = function(){
       var chart;
       chart = c3.generate({
-        bindto: '#historysvg',
+        bindto: '#history',
         data: {
           x: 'x',
           x_format: '%Y-%m-%d %H:%M:%S',
