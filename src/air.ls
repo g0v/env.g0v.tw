@@ -71,7 +71,6 @@ history = d3.select \#history
   .style \width \400px
   .style \height \200px
   .style \z-index 100
-  .append \svg
 
 x-off = width - 100 - 40
 y-off = height - (32*7) - 40
