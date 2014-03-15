@@ -330,7 +330,8 @@ update-seven-segment = (value-string) ->
         d3.select this .select ".#{pins[i]}" .classed \on, (bit .&. bite) == bit
 
 function piped(url)
-  "http://datapipes.okfnlabs.org/csv/?url=" + escape url
+  url -= /^https?:\/\//
+  return "http://www.corsproxy.com/" + url
 
 #current.on \value ->
 draw-heatmap = (stations) ->
