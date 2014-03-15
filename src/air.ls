@@ -368,6 +368,7 @@ draw-heatmap = (stations) ->
       err, req <- d3.xhr piped "http://graphite.gugod.org/render/?_salt=1392034055.328&lineMode=connected&from=-24hours&target=epa.aqx.site_code.#{sitecode}.pm25&format=csv"
       datum = d3.csv.parseRows req.responseText, ([_, date, value]) ->
         { date, value: parse-float value}
+      return unless datum.length
       history.chart.load columns: [
         ['pm2.5'] ++ [value for {value} in datum]
         ['x'] ++ [date for {date} in datum]
