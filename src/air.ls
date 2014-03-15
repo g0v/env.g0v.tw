@@ -66,12 +66,12 @@ g = svg.append \g
       .attr \class, \counties
 
 history = d3.select \#history
-  .style \top, \-300px
-  .style \left, \-100px
+  .style \top \-400px
+  .style \left \-200px
+  .style \width \400px
+  .style \height \200px
+  .style \z-index 100
   .append \svg
-  .attr \id \historysvg
-  .attr \width, 300
-  .attr \height, 100
 
 x-off = width - 100 - 40
 y-off = height - (32*7) - 40
@@ -372,13 +372,14 @@ draw-heatmap = (stations) ->
         ['pm2.5'] ++ [value for {value} in datum]
         ['x'] ++ [date for {date} in datum]
       ]
+      history.chart.resize!
 
   # plot interpolated value
   plot-interpolated-data!
 
 setup-history = ->
   chart = c3.generate do
-    bindto: '#historysvg'
+    bindto: '#history'
     data:
       x: 'x'
       x_format: '%Y-%m-%d %H:%M:%S'
