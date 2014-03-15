@@ -44,7 +44,7 @@
     canvas.scale = 1;
     svg = d3.select('body').append('svg').attr('width', width).attr('height', height).style('position', 'absolute').style('top', '0px').style('left', '0px').style('margin-top', marginTop);
     g = svg.append('g').attr('id', 'taiwan').attr('class', 'counties');
-    history = d3.select('#history').style('top', '-400px').style('left', '-200px').style('width', '400px').style('height', '200px').style('z-index', 100).append('svg');
+    history = d3.select('#history').style('top', '-400px').style('left', '-200px').style('width', '400px').style('height', '200px').style('z-index', 100);
     xOff = width - 100 - 40;
     yOff = height - 32 * 7 - 40;
     legend = svg.append('g').attr('class', 'legend').attr("transform", function(){
@@ -281,8 +281,8 @@
       }).on('mouseover', function(d, i){
         var ref$, x, y, sitecode;
         drawSegment(d, i);
-        ref$ = d3.event, x = ref$.x, y = ref$.y;
-        d3.select('#history').style('left', x + 'px').style('top', y + 'px');
+        ref$ = d3.event, x = ref$.clientX, y = ref$.clientY;
+        history.style('left', x + 'px').style('top', y + 'px');
         sitecode = d.SITE_CODE;
         return d3.xhr(piped("http://graphite.gugod.org/render/?_salt=1392034055.328&lineMode=connected&from=-24hours&target=epa.aqx.site_code." + sitecode + ".pm25&format=csv"), function(err, req){
           var datum, value, date;
