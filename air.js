@@ -1,5 +1,5 @@
 (function(){
-  var metrics;
+  var metrics, replace$ = ''.replace;
   metrics = {
     NO2: {},
     'PM2.5': {
@@ -252,7 +252,8 @@
       });
     };
     function piped(url){
-      return "http://datapipes.okfnlabs.org/csv/?url=" + escape(url);
+      url = replace$.call(url, /^https?:\/\//, '');
+      return "http://www.corsproxy.com/" + url;
     }
     drawHeatmap = function(stations){
       var res$, i$, len$, st, val;
