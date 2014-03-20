@@ -284,7 +284,7 @@
         ref$ = d3.event, x = ref$.clientX, y = ref$.clientY;
         history.style('left', x + 'px').style('top', y + 'px');
         sitecode = d.SITE_CODE;
-        return d3.xhr(piped("http://graphite.gugod.org/render/?_salt=1392034055.328&lineMode=connected&from=-24hours&target=epa.aqx.site_code." + sitecode + ".pm25&format=csv"), function(err, req){
+        return d3.xhr("http://graphite.gugod.org/render/?_salt=1392034055.328&lineMode=connected&from=-24hours&target=epa.aqx.site_code." + sitecode + ".pm25&format=csv", function(err, req){
           var datum, value, date;
           datum = d3.csv.parseRows(req.responseText, function(arg$){
             var _, date, value;
