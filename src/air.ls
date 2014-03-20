@@ -364,7 +364,7 @@ draw-heatmap = (stations) ->
         .style \top y + \px
 
       sitecode = d.SITE_CODE
-      err, req <- d3.xhr piped "http://graphite.gugod.org/render/?_salt=1392034055.328&lineMode=connected&from=-24hours&target=epa.aqx.site_code.#{sitecode}.pm25&format=csv"
+      err, req <- d3.xhr "http://graphite.gugod.org/render/?_salt=1392034055.328&lineMode=connected&from=-24hours&target=epa.aqx.site_code.#{sitecode}.pm25&format=csv"
       datum = d3.csv.parseRows req.responseText, ([_, date, value]) ->
         { date, value: parse-float value}
       return unless datum.length
