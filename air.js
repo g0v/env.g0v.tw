@@ -91,11 +91,16 @@
     };
     path = d3.geo.path().projection(proj);
     drawTaiwan = function(countiestopo){
-      var counties;
-      counties = topojson.feature(countiestopo, countiestopo.objects['twCounty2010.geo']);
-      return g.selectAll('path').data(counties.features).enter().append('path').attr('class', function(){
+      var layerName, ref$, topoObjects, counties, results$ = [];
+      for (layerName in ref$ = countiestopo.objects) {
+        topoObjects = ref$[layerName];
+        counties = topojson.feature(countiestopo, topoObjects);
+        results$.push(g.selectAll('path').data(counties.features).enter().append('path').attr('class', fn$).attr('d', path));
+      }
+      return results$;
+      function fn$(){
         return 'q-9-9';
-      }).attr('d', path);
+      }
     };
     ConvertDMSToDD = function(days, minutes, seconds){
       var dd;
