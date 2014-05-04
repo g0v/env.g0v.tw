@@ -147,14 +147,14 @@ path = d3.geo.path!projection proj
 
 ### Draw Taiwan
 draw-taiwan = (countiestopo) ->
+  for layer-name, topo-objects of countiestopo.objects
+    counties = topojson.feature countiestopo, topo-objects
 
-  counties = topojson.feature countiestopo, countiestopo.objects['twCounty2010.geo']
-
-  g.selectAll 'path'
-    .data counties.features
-    .enter!append 'path'
-    .attr 'class', -> \q-9-9
-    .attr 'd', path
+    g.selectAll 'path'
+      .data counties.features
+      .enter!append 'path'
+      .attr 'class', -> \q-9-9
+      .attr 'd', path
 
 ConvertDMSToDD = (days, minutes, seconds) ->
   days = +days
