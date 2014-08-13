@@ -3,8 +3,11 @@ language: node_js
 node_js:
   - '0.10'
 
+git:
+  depth: 1
+
 before_install:
-  - gem install sass compass
+  - gem install sass compass --no-document
   - sass --version
 
 before_script:
