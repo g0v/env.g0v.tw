@@ -29,5 +29,9 @@
     "gulp": "~3.5.2",
     "connect-livereload": "~0.3.2",
     "gulp-livereload": "~1.1.1"
+  },
+  "dependencies": {
+    "request": "^2.40.0",
+    "xml2js": "^0.4.4"
   }
 }
