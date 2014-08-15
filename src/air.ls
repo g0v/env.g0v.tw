@@ -19,7 +19,9 @@ metrics = do
     domain: [0, 40, 80, 120, 300]
     name: \臭氧
     unit: \ppb
-
+  RAIN:
+    domain: [1 2 6 10 15 20 30 40 50 70 90 110 130 150 200 300]
+    name: \雨量
 <- $
 
 window-width = $(window) .width!
@@ -27,10 +29,10 @@ window-width = $(window) .width!
 if window-width > 998
   width = $(window) .height! / 4 * 3
   width <?= 687
-  margin-top = \0px
 else
   width = $(window) .width!
-  margin-top = \65px
+
+margin-top = \65px
 
 height = width * 4 / 3
 
@@ -181,14 +183,20 @@ var color-of
 var stations
 
 set-metric = (name) ->
+
   current-metric := name
-  color-of := d3.scale.linear()
-  .domain metrics[name].domain ? [0, 50, 100, 200, 300]
-  .range [ d3.hsl(100, 1.0, 0.6)
-           d3.hsl(60, 1.0, 0.6)
-           d3.hsl(30, 1.0, 0.6)
-           d3.hsl(0, 1.0, 0.6)
-           d3.hsl(0, 1.0, 0.1) ]
+  if location.pathname.match /^\/air/
+    color-of := d3.scale.linear!
+    .domain metrics[name].domain ? [0, 50, 100, 200, 300]
+    .range [ d3.hsl(100, 1.0, 0.6)
+             d3.hsl(60, 1.0, 0.6)
+             d3.hsl(30, 1.0, 0.6)
+             d3.hsl(0, 1.0, 0.6)
+             d3.hsl(0, 1.0, 0.1) ]
+  else
+    color-of := d3.scale.quantile!
+    .domain metrics[name].domain ? [ 1 2 6 10 15 20 30 40 50 70 90 110 130 150 200 300 ]
+    .range <[ #c5bec2 #99feff #00ccfc #0795fd #025ffe #3c9700 #2bfe00 #fdfe00 #ffcb00 #eaa200 #f30500 #d60002 #9e0003 #9e009d #d400d1 #fa00ff #facefb]>
   current-unit := metrics[name].unit ? ''
 
   add-list stations
@@ -198,20 +206,36 @@ set-metric = (name) ->
       ..append \rect
       ..append \text
     ..each (d, i) ->
-      d3.select @
-        ..select 'rect'
-          .attr \width 20
-          .attr \height 20
-          .attr \x 30
-          .attr \y -> (i+2)*30
-          .style \fill (d) -> color-of d
-        ..select \text
-          .attr \x 55
-          .attr \y -> (i+2)*30+15
-          .attr \d \.35em
-          .text -> &0 + current-unit
-          .style \fill \#AAAAAA
-          .style \font-size \10px
+      if location.pathname.match /^\/air/
+        d3.select @
+          ..select 'rect'
+            .attr \width 20
+            .attr \height 20
+            .attr \x 30
+            .attr \y -> (i+2)*30
+            .style \fill (d) -> color-of d
+          ..select \text
+            .attr \x 55
+            .attr \y -> (i+2)*30+15
+            .attr \d \.35em
+            .text -> &0 + current-unit
+            .style \fill \#AAAAAA
+            .style \font-size \10px
+      else
+        d3.select @
+          ..select 'rect'
+            .attr \width 10
+            .attr \height 10
+            .attr \x 30
+            .attr \y -> (i+2)*10+25
+            .style \fill (d) -> color-of d
+          ..select \text
+            .attr \x 55
+            .attr \y -> (i+2)*10+35
+            .attr \d \.35em
+            .text -> &0 + current-unit
+            .style \fill \#AAAAAA
+            .style \font-size \10px
     ..exit!remove!
 
   draw-heatmap stations
@@ -284,7 +308,7 @@ plot-interpolated-data = (ending) ->
   render-line = ->
     c = canvas.node!.getContext \2d
     for x-pixel from 0 to width by 2
-      y = min-latitude + dy * ((y-pixel + zoom.translate![1] - height) / zoom.scale! + height) 
+      y = min-latitude + dy * ((y-pixel + zoom.translate![1] - height) / zoom.scale! + height)
       x = min-longitude + dx * ((x-pixel - zoom.translate![0]) / zoom.scale!)
       z = 0 >? idw-interpolate samples, 4.0, [x, y]
 
@@ -341,7 +365,6 @@ draw-heatmap = (stations) ->
     .text "已更新"
 
   update-seven-segment "    "
-
   samples := for st in stations when epa-data[st.name]?
     val = parseFloat epa-data[st.name][current-metric]
     # XXX mark NaN stations
@@ -352,10 +375,13 @@ draw-heatmap = (stations) ->
   svg.selectAll \circle
     .data stations
     .style \fill (st) ->
-      if epa-data[st.name]? and not isNaN epa-data[st.name][current-metric]
-        color-of parseFloat epa-data[st.name][current-metric]
-      else
-        \#FFFFFF
+      \#FFFFFF
+      # if epa-data[st.name]? and not isNaN epa-data[st.name][current-metric]
+      #   value = parseFloat epa-data[st.name][current-metric]
+      #   color = color-of parseFloat epa-data[st.name][current-metric]
+      #   color if value >= 0
+      # else
+      #   \#FFFFFF
     .on \mouseover (d, i) ->
       draw-segment d, i
       {clientX: x, clientY: y} = d3.event
@@ -393,25 +419,33 @@ setup-history = ->
   history.chart = chart
 
 draw-all = (_stations) ->
-  stations := for s in _stations
-    s.lng = ConvertDMSToDD ...(s.SITE_EAST_LONG.split \,)
-    s.lat = ConvertDMSToDD ...(s.SITE_NORTH_LAT.split \,)
-    s.name = s.SITE
-    s
-  draw-stations stations
-  <- d3.csv piped 'http://opendata.epa.gov.tw/ws/Data/AQX/?$orderby=SiteName&$skip=0&$top=1000&format=csv'
-  epa-data := {[e.SiteName, e] for e in it}
-  set-metric \PM2.5
-  $ \.psi .click ->
-    set-metric \PSI
-  $ \.pm10 .click ->
-    set-metric \PM10
-  $ \.pm25 .click ->
-    set-metric \PM2.5
-  $ \.o3 .click ->
-    set-metric \O3
 
-setup-history!
+  if location.pathname.match /^\/air/
+    stations := for s in _stations
+      s.lng = ConvertDMSToDD ...(s.SITE_EAST_LONG.split \,)
+      s.lat = ConvertDMSToDD ...(s.SITE_NORTH_LAT.split \,)
+      s.name = s.SITE
+      s
+    <- d3.csv piped 'http://opendata.epa.gov.tw/ws/Data/AQX/?$orderby=SiteName&$skip=0&$top=1000&format=csv'
+    epa-data := {[e.SiteName, e] for e in it}
+    set-metric \PM2.5
+    $ \.psi .click ->
+      set-metric \PSI
+    $ \.pm10 .click ->
+      set-metric \PM10
+    $ \.pm25 .click ->
+      set-metric \PM2.5
+    $ \.o3 .click ->
+      set-metric \O3
+  else
+    stations := _stations
+    <- d3.json '/rainfall.json'
+    epa-data := {[e.name, e] for e in it}
+    set-metric \RAIN
+  draw-stations stations
+
+
+
 
 zoom = d3.behavior.zoom!
   .on \zoom ->
@@ -430,7 +464,7 @@ zoom = d3.behavior.zoom!
     canvas.scale = zoom.scale!
     plot-interpolated-data ~> wrapper.selectAll \canvas .data [0] .exit!.remove!
 
-if localStorage.countiestopo and localStorage.stations
+if localStorage.countiestopo and localStorage.stations and location.pathname.match /^\/air/
   <- setTimeout _, 1ms
   draw-taiwan JSON.parse localStorage.countiestopo
   stations = JSON.parse localStorage.stations
@@ -440,13 +474,21 @@ else
   countiestopo <- d3.json "/twCounty2010.topo.json"
   try localStorage.countiestopo = JSON.stringify countiestopo
   draw-taiwan countiestopo
-  stations <- d3.csv "/epa-site.csv"
-  try localStorage.stations = JSON.stringify stations
-  draw-all stations
-do
-  forecast <- d3.csv piped 'http://opendata.epa.gov.tw/ws/Data/AQF/?$orderby=AreaName&$skip=0&$top=1000&format=csv'
-  first = forecast[0]
-  d3.select \#forecast
-    .text first.Content
-  d3.select \#info-panel
-    .text first.Content
+  if location.pathname.match /^\/air/
+    stations <- d3.csv "/epa-site.csv"
+    try localStorage.stations = JSON.stringify stations
+    draw-all stations
+  else
+    stations <- d3.json "/stations.json"
+    draw-all stations
+
+
+if location.pathname.match /^\/air/
+  setup-history!
+  do
+    forecast <- d3.csv piped 'http://opendata.epa.gov.tw/ws/Data/AQF/?$orderby=AreaName&$skip=0&$top=1000&format=csv'
+    first = forecast[0]
+    d3.select \#forecast
+      .text first.Content
+    d3.select \#info-panel
+      .text first.Content
