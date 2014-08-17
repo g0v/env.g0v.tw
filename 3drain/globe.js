@@ -1,6 +1,6 @@
 (function(){
   $(function(){
-    var yearPerSec, gregorianDate, cartesian3Scratch, HealthAndWealthDataSource, viewer, x$, healthAndWealth, highlightBarHandler, c, restoreCamera;
+    var yearPerSec, gregorianDate, cartesian3Scratch, HealthAndWealthDataSource, viewer, layers, x$, healthAndWealth, highlightBarHandler, c, restoreCamera;
     yearPerSec = 86400 * 365;
     gregorianDate = new Cesium.GregorianDate;
     cartesian3Scratch = new Cesium.Cartesian3;
@@ -217,9 +217,15 @@
     viewer = window.viewer = new Cesium.Viewer('cesiumContainer', {
       fullscreenElement: document.body,
       sceneMode: Cesium.SceneMode[3],
-      infoBox: false
+      infoBox: false,
+      baseLayerPicker: false
     });
-    viewer.baseLayerPicker.viewModel.selectedImagery = viewer.baseLayerPicker.viewModel.imageryProviderViewModels[0];
+    console.log('foo');
+    layers = viewer.scene.imageryLayers;
+    layers.addImageryProvider(new Cesium.SingleTileImageryProvider({
+      url: '/img/g0v-2line-transparent-darkbackground-m.png',
+      rectangle: Cesium.Rectangle.fromDegrees(121.8, 24.0, 122.3, 24.5)
+    }));
     import$(viewer.clock, {
       clockRange: Cesium.ClockRange.LOOP_STOP,
       startTime: Cesium.JulianDate.fromIso8601('2014-08-01'),
