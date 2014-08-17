@@ -224,7 +224,7 @@
     layers = viewer.scene.imageryLayers;
     layers.addImageryProvider(new Cesium.SingleTileImageryProvider({
       url: '/img/g0v-2line-transparent-darkbackground-m.png',
-      rectangle: Cesium.Rectangle.fromDegrees(121.8, 24.0, 122.3, 24.5)
+      rectangle: Cesium.Rectangle.fromDegrees(121.8, 24.0, 122.68, 24.6)
     }));
     import$(viewer.clock, {
       clockRange: Cesium.ClockRange.LOOP_STOP,
