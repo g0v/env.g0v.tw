@@ -150,7 +150,7 @@ console.log \foo
 layers = viewer.scene.imageryLayers
 layers.addImageryProvider new Cesium.SingleTileImageryProvider do
   url : '/img/g0v-2line-transparent-darkbackground-m.png'
-  rectangle : Cesium.Rectangle.fromDegrees(121.8, 24.0, 122.3, 24.5)
+  rectangle : Cesium.Rectangle.fromDegrees(121.8, 24.0, 122.68, 24.6)
 
 viewer.clock <<< do
   clockRange: Cesium.ClockRange.LOOP_STOP
