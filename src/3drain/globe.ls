@@ -143,8 +143,15 @@ viewer = window.viewer = new Cesium.Viewer 'cesiumContainer', {
   fullscreenElement: document.body
   sceneMode: Cesium.SceneMode.3D_VIEW
   -infoBox
+  -baseLayerPicker
 }
-viewer.baseLayerPicker.viewModel.selectedImagery = viewer.baseLayerPicker.viewModel.imageryProviderViewModels.0
+console.log \foo
+
+layers = viewer.scene.imageryLayers
+layers.addImageryProvider new Cesium.SingleTileImageryProvider do
+  url : '/img/g0v-2line-transparent-darkbackground-m.png'
+  rectangle : Cesium.Rectangle.fromDegrees(121.8, 24.0, 122.3, 24.5)
+
 viewer.clock <<< do
   clockRange: Cesium.ClockRange.LOOP_STOP
   startTime: Cesium.JulianDate.fromIso8601 '2014-08-01'
