@@ -60,7 +60,7 @@ div.inspector p {
 .menu .data.button,
 .menu .launch.button,
 .menu .forcest.button {
-  display: none;
+  display: block;
   font-size: 1.5rem;
 }
 .ui.menu .item.button {

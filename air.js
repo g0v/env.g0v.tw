@@ -24,6 +24,10 @@
       domain: [0, 40, 80, 120, 300],
       name: '臭氧',
       unit: 'ppb'
+    },
+    RAIN: {
+      domain: [1, 2, 6, 10, 15, 20, 30, 40, 50, 70, 90, 110, 130, 150, 200, 300],
+      name: '雨量'
     }
   };
   $(function(){
@@ -32,11 +36,10 @@
     if (windowWidth > 998) {
       width = $(window).height() / 4 * 3;
       width <= 687 || (width = 687);
-      marginTop = '0px';
     } else {
       width = $(window).width();
-      marginTop = '65px';
     }
+    marginTop = '65px';
     height = width * 4 / 3;
     wrapper = d3.select('body').append('div').style('width', width + 'px').style('height', height + 'px').style('position', 'absolute').style('margin-top', marginTop).style('top', '0px').style('left', '0px').style('overflow', 'hidden');
     canvas = wrapper.append('canvas').attr('width', width).attr('height', height).style('position', 'absolute');
@@ -120,9 +123,15 @@
     setMetric = function(name){
       var ref$, x$, y$;
       currentMetric = name;
-      colorOf = d3.scale.linear().domain((ref$ = metrics[name].domain) != null
-        ? ref$
-        : [0, 50, 100, 200, 300]).range([d3.hsl(100, 1.0, 0.6), d3.hsl(60, 1.0, 0.6), d3.hsl(30, 1.0, 0.6), d3.hsl(0, 1.0, 0.6), d3.hsl(0, 1.0, 0.1)]);
+      if (location.pathname.match(/^\/air/)) {
+        colorOf = d3.scale.linear().domain((ref$ = metrics[name].domain) != null
+          ? ref$
+          : [0, 50, 100, 200, 300]).range([d3.hsl(100, 1.0, 0.6), d3.hsl(60, 1.0, 0.6), d3.hsl(30, 1.0, 0.6), d3.hsl(0, 1.0, 0.6), d3.hsl(0, 1.0, 0.1)]);
+      } else {
+        colorOf = d3.scale.quantile().domain((ref$ = metrics[name].domain) != null
+          ? ref$
+          : [1, 2, 6, 10, 15, 20, 30, 40, 50, 70, 90, 110, 130, 150, 200, 300]).range(['#c5bec2', '#99feff', '#00ccfc', '#0795fd', '#025ffe', '#3c9700', '#2bfe00', '#fdfe00', '#ffcb00', '#eaa200', '#f30500', '#d60002', '#9e0003', '#9e009d', '#d400d1', '#fa00ff', '#facefb']);
+      }
       currentUnit = (ref$ = metrics[name].unit) != null ? ref$ : '';
       addList(stations);
       x$ = legend.selectAll("g.entry").data(colorOf.domain());
@@ -130,19 +139,34 @@
       y$.append('rect');
       y$.append('text');
       x$.each(function(d, i){
-        var x$;
-        x$ = d3.select(this);
-        x$.select('rect').attr('width', 20).attr('height', 20).attr('x', 30).attr('y', function(){
-          return (i + 2) * 30;
-        }).style('fill', function(d){
-          return colorOf(d);
-        });
-        x$.select('text').attr('x', 55).attr('y', function(){
-          return (i + 2) * 30 + 15;
-        }).attr('d', '.35em').text(function(){
-          return arguments[0] + currentUnit;
-        }).style('fill', '#AAAAAA').style('font-size', '10px');
-        return x$;
+        var x$, y$;
+        if (location.pathname.match(/^\/air/)) {
+          x$ = d3.select(this);
+          x$.select('rect').attr('width', 20).attr('height', 20).attr('x', 30).attr('y', function(){
+            return (i + 2) * 30;
+          }).style('fill', function(d){
+            return colorOf(d);
+          });
+          x$.select('text').attr('x', 55).attr('y', function(){
+            return (i + 2) * 30 + 15;
+          }).attr('d', '.35em').text(function(){
+            return arguments[0] + currentUnit;
+          }).style('fill', '#AAAAAA').style('font-size', '10px');
+          return x$;
+        } else {
+          y$ = d3.select(this);
+          y$.select('rect').attr('width', 10).attr('height', 10).attr('x', 30).attr('y', function(){
+            return (i + 2) * 10 + 25;
+          }).style('fill', function(d){
+            return colorOf(d);
+          });
+          y$.select('text').attr('x', 55).attr('y', function(){
+            return (i + 2) * 10 + 35;
+          }).attr('d', '.35em').text(function(){
+            return arguments[0] + currentUnit;
+          }).style('fill', '#AAAAAA').style('font-size', '10px');
+          return y$;
+        }
       });
       x$.exit().remove();
       return drawHeatmap(stations);
@@ -278,11 +302,7 @@
       }
       samples = res$;
       svg.selectAll('circle').data(stations).style('fill', function(st){
-        if (epaData[st.name] != null && !isNaN(epaData[st.name][currentMetric])) {
-          return colorOf(parseFloat(epaData[st.name][currentMetric]));
-        } else {
-          return '#FFFFFF';
-        }
+        return '#FFFFFF';
       }).on('mouseover', function(d, i){
         var ref$, x, y, sitecode;
         drawSegment(d, i);
@@ -348,40 +368,53 @@
     };
     drawAll = function(_stations){
       var res$, i$, len$, s;
-      res$ = [];
-      for (i$ = 0, len$ = _stations.length; i$ < len$; ++i$) {
-        s = _stations[i$];
-        s.lng = ConvertDMSToDD.apply(null, s.SITE_EAST_LONG.split(','));
-        s.lat = ConvertDMSToDD.apply(null, s.SITE_NORTH_LAT.split(','));
-        s.name = s.SITE;
-        res$.push(s);
-      }
-      stations = res$;
-      drawStations(stations);
-      return d3.csv(piped('http://opendata.epa.gov.tw/ws/Data/AQX/?$orderby=SiteName&$skip=0&$top=1000&format=csv'), function(it){
-        var res$, i$, len$, e;
-        res$ = {};
-        for (i$ = 0, len$ = it.length; i$ < len$; ++i$) {
-          e = it[i$];
-          res$[e.SiteName] = e;
+      if (location.pathname.match(/^\/air/)) {
+        res$ = [];
+        for (i$ = 0, len$ = _stations.length; i$ < len$; ++i$) {
+          s = _stations[i$];
+          s.lng = ConvertDMSToDD.apply(null, s.SITE_EAST_LONG.split(','));
+          s.lat = ConvertDMSToDD.apply(null, s.SITE_NORTH_LAT.split(','));
+          s.name = s.SITE;
+          res$.push(s);
         }
-        epaData = res$;
-        setMetric('PM2.5');
-        $('.psi').click(function(){
-          return setMetric('PSI');
+        stations = res$;
+        d3.csv(piped('http://opendata.epa.gov.tw/ws/Data/AQX/?$orderby=SiteName&$skip=0&$top=1000&format=csv'), function(it){
+          var res$, i$, len$, e;
+          res$ = {};
+          for (i$ = 0, len$ = it.length; i$ < len$; ++i$) {
+            e = it[i$];
+            res$[e.SiteName] = e;
+          }
+          epaData = res$;
+          setMetric('PM2.5');
+          $('.psi').click(function(){
+            return setMetric('PSI');
+          });
+          $('.pm10').click(function(){
+            return setMetric('PM10');
+          });
+          $('.pm25').click(function(){
+            return setMetric('PM2.5');
+          });
+          return $('.o3').click(function(){
+            return setMetric('O3');
+          });
         });
-        $('.pm10').click(function(){
-          return setMetric('PM10');
+      } else {
+        stations = _stations;
+        d3.json('/rainfall.json', function(it){
+          var res$, i$, len$, e;
+          res$ = {};
+          for (i$ = 0, len$ = it.length; i$ < len$; ++i$) {
+            e = it[i$];
+            res$[e.name] = e;
+          }
+          epaData = res$;
+          return setMetric('RAIN');
         });
-        $('.pm25').click(function(){
-          return setMetric('PM2.5');
-        });
-        return $('.o3').click(function(){
-          return setMetric('O3');
-        });
-      });
+      }
+      return drawStations(stations);
     };
-    setupHistory();
     zoom = d3.behavior.zoom().on('zoom', function(){
       g.attr('transform', 'translate(' + d3.event.translate.join(',') + ')scale(' + d3.event.scale + ')');
       g.selectAll('path').attr('d', path.projection(proj));
@@ -395,7 +428,7 @@
         return wrapper.selectAll('canvas').data([0]).exit().remove();
       });
     });
-    if (localStorage.countiestopo && localStorage.stations) {
+    if (localStorage.countiestopo && localStorage.stations && location.pathname.match(/^\/air/)) {
       setTimeout(function(){
         var stations;
         drawTaiwan(JSON.parse(localStorage.countiestopo));
@@ -409,20 +442,29 @@
           localStorage.countiestopo = JSON.stringify(countiestopo);
         } catch (e$) {}
         drawTaiwan(countiestopo);
-        return d3.csv("/epa-site.csv", function(stations){
-          try {
-            localStorage.stations = JSON.stringify(stations);
-          } catch (e$) {}
-          return drawAll(stations);
-        });
+        if (location.pathname.match(/^\/air/)) {
+          return d3.csv("/epa-site.csv", function(stations){
+            try {
+              localStorage.stations = JSON.stringify(stations);
+            } catch (e$) {}
+            return drawAll(stations);
+          });
+        } else {
+          return d3.json("/stations.json", function(stations){
+            return drawAll(stations);
+          });
+        }
       });
     }
-    return d3.csv(piped('http://opendata.epa.gov.tw/ws/Data/AQF/?$orderby=AreaName&$skip=0&$top=1000&format=csv'), function(forecast){
-      var first;
-      first = forecast[0];
-      d3.select('#forecast').text(first.Content);
-      return d3.select('#info-panel').text(first.Content);
-    });
+    if (location.pathname.match(/^\/air/)) {
+      setupHistory();
+      return d3.csv(piped('http://opendata.epa.gov.tw/ws/Data/AQF/?$orderby=AreaName&$skip=0&$top=1000&format=csv'), function(forecast){
+        var first;
+        first = forecast[0];
+        d3.select('#forecast').text(first.Content);
+        return d3.select('#info-panel').text(first.Content);
+      });
+    }
   });
   function repeatString$(str, n){
     for (var r = ''; n > 0; (n >>= 1) && (str += str)) if (n & 1) r += str;
