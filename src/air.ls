@@ -283,19 +283,18 @@ distanceSquare = ([x1, y1], [x2, y2]) ->
 # power: positive integer
 # point: [x, y]
 # return z
-idw-interpolate = (samples, power, point) ->
-  sum = 0.0
-  sum-weight = 0.0
+idw-train = (samples) ->
+  sx=[]
+  sy=[]
+  sz=[]
   for s in samples
-    d = distanceSquare(s, point)
-    return s[2] if d == 0.0
-    weight = 1.0 / (d * d) # Performance Hack: Let power = 4 for fast exp calculation.
-    sum := sum + weight
-    sum-weight := sum-weight + weight * if isNaN s[2] => 0 else s[2]
-  sum-weight / sum
+    sx.push s[0]
+    sy.push s[1]
+    sz.push s[2]
+  kriging.train sz, sx, sy, "exponential", 0, 100
 
-
-
+idw-pred = (variogram, point) ->
+  kriging.predict point[0], point[1], variogram
 
 y-pixel = 0
 
@@ -307,10 +306,11 @@ plot-interpolated-data = (ending) ->
 
   render-line = ->
     c = canvas.node!.getContext \2d
+    variogram = idw-train samples
     for x-pixel from 0 to width by 2
       y = min-latitude + dy * ((y-pixel + zoom.translate![1] - height) / zoom.scale! + height)
       x = min-longitude + dx * ((x-pixel - zoom.translate![0]) / zoom.scale!)
-      z = 0 >? idw-interpolate samples, 4.0, [x, y]
+      z = 0 >? idw-pred variogram, [x, y]
 
       c.fillStyle = color-of z
       c.fillRect x-pixel, height - y-pixel, 2, 2
