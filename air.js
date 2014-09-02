@@ -31,7 +31,7 @@
     }
   };
   $(function(){
-    var windowWidth, width, marginTop, height, wrapper, canvas, svg, g, history, xOff, yOff, legend, x$, minLatitude, maxLatitude, minLongitude, maxLongitude, dy, dx, proj, path, drawTaiwan, ConvertDMSToDD, drawStations, currentMetric, currentUnit, colorOf, stations, setMetric, drawSegment, addList, epaData, samples, distanceSquare, idwInterpolate, yPixel, plotInterpolatedData, updateSevenSegment, drawHeatmap, setupHistory, drawAll, zoom;
+    var windowWidth, width, marginTop, height, wrapper, canvas, svg, g, history, xOff, yOff, legend, x$, minLatitude, maxLatitude, minLongitude, maxLongitude, dy, dx, proj, path, drawTaiwan, ConvertDMSToDD, drawStations, currentMetric, currentUnit, colorOf, stations, setMetric, drawSegment, addList, epaData, samples, distanceSquare, idwTrain, idwPred, yPixel, plotInterpolatedData, updateSevenSegment, drawHeatmap, setupHistory, drawAll, zoom;
     windowWidth = $(window).width();
     if (windowWidth > 998) {
       width = $(window).height() / 4 * 3;
@@ -200,23 +200,21 @@
       x2 = arg1$[0], y2 = arg1$[1];
       return Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2);
     };
-    idwInterpolate = function(samples, power, point){
-      var sum, sumWeight, i$, len$, s, d, weight;
-      sum = 0.0;
-      sumWeight = 0.0;
+    idwTrain = function(samples){
+      var sx, sy, sz, i$, len$, s;
+      sx = [];
+      sy = [];
+      sz = [];
       for (i$ = 0, len$ = samples.length; i$ < len$; ++i$) {
         s = samples[i$];
-        d = distanceSquare(s, point);
-        if (d === 0.0) {
-          return s[2];
-        }
-        weight = 1.0 / (d * d);
-        sum = sum + weight;
-        sumWeight = sumWeight + weight * (isNaN(s[2])
-          ? 0
-          : s[2]);
+        sx.push(s[0]);
+        sy.push(s[1]);
+        sz.push(s[2]);
       }
-      return sumWeight / sum;
+      return kriging.train(sz, sx, sy, "exponential", 0, 100);
+    };
+    idwPred = function(variogram, point){
+      return kriging.predict(point[0], point[1], variogram);
     };
     yPixel = 0;
     plotInterpolatedData = function(ending){
@@ -230,13 +228,14 @@
       }
       starts = res$;
       renderLine = function(){
-        var c, i$, to$, xPixel, y, x, z, ref$;
+        var c, variogram, i$, to$, xPixel, y, x, z, ref$;
         c = canvas.node().getContext('2d');
+        variogram = idwTrain(samples);
         for (i$ = 0, to$ = width; i$ <= to$; i$ += 2) {
           xPixel = i$;
           y = minLatitude + dy * ((yPixel + zoom.translate()[1] - height) / zoom.scale() + height);
           x = minLongitude + dx * ((xPixel - zoom.translate()[0]) / zoom.scale());
-          z = 0 > (ref$ = idwInterpolate(samples, 4.0, [x, y])) ? 0 : ref$;
+          z = 0 > (ref$ = idwPred(variogram, [x, y])) ? 0 : ref$;
           c.fillStyle = colorOf(z);
           c.fillRect(xPixel, height - yPixel, 2, 2);
         }
