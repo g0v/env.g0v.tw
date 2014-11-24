@@ -487,6 +487,7 @@ if location.pathname.match /^\/air/
   setup-history!
   do
     forecast <- d3.csv piped 'http://opendata.epa.gov.tw/ws/Data/AQF/?$orderby=AreaName&$skip=0&$top=1000&format=csv'
+    return unless forecast
     first = forecast[0]
     d3.select \#forecast
       .text first.Content
