@@ -459,6 +459,9 @@
       setupHistory();
       return d3.csv(piped('http://opendata.epa.gov.tw/ws/Data/AQF/?$orderby=AreaName&$skip=0&$top=1000&format=csv'), function(forecast){
         var first;
+        if (!forecast) {
+          return;
+        }
         first = forecast[0];
         d3.select('#forecast').text(first.Content);
         return d3.select('#info-panel').text(first.Content);
