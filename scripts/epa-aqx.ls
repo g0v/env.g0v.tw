@@ -17,12 +17,17 @@ if err
 
 lines = body.split /[\r\n]+/
 fields = lines.shift!.split /,/
+  ..shift!
+  ..shift!
+  ..pop!
+textFields = fields.splice 1, 2
 points = lines.map (line) ->
   values = line.split /,/
   siteName = values.shift!
   countyName = values.shift!  # unused
   time = new Date values.pop!
-  {["epa-aqx.#{fields[i+2]}.#siteName", [{value, time}]] for value, i in values}
+  {["epa-aqx.#{textFields[i]}.#siteName", [{value, time}]] for value, i in values.splice 1, 2} <<<
+    {["epa-aqx.#{fields[i]}.#siteName", [{value, time}]] for value, i in values.map parseFloat}
 .reduce (all, newPoints) ->
   all <<< newPoints
 , {}
