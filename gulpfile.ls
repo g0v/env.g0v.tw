@@ -11,7 +11,8 @@ gulp.task \html <[jade]> ->
 gulp.task \jade ->
   gulp.src 'src/**/*.jade'
     .pipe gulp-jade!
-    .pipe gulp.dest '_public'
+    .pipe gulp.dest "#build-path"
+    .pipe gulp-livereload server
 
 gulp.task \ls ->
   gulp.src 'src/**/*.ls'
