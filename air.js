@@ -185,7 +185,7 @@
       var list;
       list = d3.select('div.sidebar');
       return list.selectAll('a').data(stations).enter().append('a').attr('class', 'item').text(function(it){
-        return it.SITE;
+        return it.SiteName;
       }).on('click', function(d, i){
         drawSegment(d, i);
         $('.launch.button').click();
@@ -307,7 +307,7 @@
         drawSegment(d, i);
         ref$ = d3.event, x = ref$.clientX, y = ref$.clientY;
         history.style('left', x + 'px').style('top', y + 'px');
-        sitecode = d.SITE_CODE;
+        sitecode = d.SiteCode;
         return d3.xhr("http://graphite.gugod.org/render/?_salt=1392034055.328&lineMode=connected&from=-24hours&target=epa.aqx.site_code." + sitecode + ".pm25&format=csv", function(err, req){
           var datum, value, date;
           datum = d3.csv.parseRows(req.responseText, function(arg$){
@@ -371,9 +371,9 @@
         res$ = [];
         for (i$ = 0, len$ = _stations.length; i$ < len$; ++i$) {
           s = _stations[i$];
-          s.lng = ConvertDMSToDD.apply(null, s.SITE_EAST_LONG.split(','));
-          s.lat = ConvertDMSToDD.apply(null, s.SITE_NORTH_LAT.split(','));
-          s.name = s.SITE;
+          s.lng = s.TWD97Lon;
+          s.lat = s.TWD97Lat;
+          s.name = s.SiteName;
           res$.push(s);
         }
         stations = res$;
