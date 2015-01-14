@@ -257,7 +257,7 @@ add-list = (stations) ->
     .enter!append 'a'
     .attr \class, \item
     .text ->
-      it.SITE
+      it.SiteName
     .on \click (d, i) ->
       draw-segment d, i
       $ \.launch.button .click!
@@ -389,7 +389,7 @@ draw-heatmap = (stations) ->
         .style \left x + \px
         .style \top y + \px
 
-      sitecode = d.SITE_CODE
+      sitecode = d.SiteCode
       err, req <- d3.xhr "http://graphite.gugod.org/render/?_salt=1392034055.328&lineMode=connected&from=-24hours&target=epa.aqx.site_code.#{sitecode}.pm25&format=csv"
       datum = d3.csv.parseRows req.responseText, ([_, date, value]) ->
         { date, value: parse-float value}
@@ -422,9 +422,9 @@ draw-all = (_stations) ->
 
   if location.pathname.match /^\/air/
     stations := for s in _stations
-      s.lng = ConvertDMSToDD ...(s.SITE_EAST_LONG.split \,)
-      s.lat = ConvertDMSToDD ...(s.SITE_NORTH_LAT.split \,)
-      s.name = s.SITE
+      s.lng = s.TWD97Lon
+      s.lat = s.TWD97Lat
+      s.name = s.SiteName
       s
     <- d3.csv piped 'http://opendata.epa.gov.tw/ws/Data/AQX/?$orderby=SiteName&$skip=0&$top=1000&format=csv'
     epa-data := {[e.SiteName, e] for e in it}
