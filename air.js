@@ -31,7 +31,7 @@
     }
   };
   $(function(){
-    var windowWidth, width, marginTop, height, wrapper, canvas, svg, g, history, xOff, yOff, legend, x$, minLatitude, maxLatitude, minLongitude, maxLongitude, dy, dx, proj, path, drawTaiwan, ConvertDMSToDD, drawStations, currentMetric, currentUnit, colorOf, stations, setMetric, drawSegment, addList, epaData, samples, distanceSquare, idwTrain, idwPred, yPixel, plotInterpolatedData, updateSevenSegment, drawHeatmap, setupHistory, drawAll, zoom;
+    var windowWidth, width, marginTop, height, wrapper, canvas, svg, g, history, xOff, yOff, legend, x$, minLatitude, maxLatitude, minLongitude, maxLongitude, dy, dx, proj, path, drawTaiwan, ConvertDMSToDD, drawStations, currentMetric, currentUnit, colorOf, stations, setMetric, drawSegment, addList, epaData, samples, distanceSquare, idwTrain, idwPred, yPixel, plotInterpolatedData, updateSevenSegment, drawHeatmap, setupHistory, drawAll, zoom, now;
     windowWidth = $(window).width();
     if (windowWidth > 998) {
       width = $(window).height() / 4 * 3;
@@ -427,32 +427,36 @@
         return wrapper.selectAll('canvas').data([0]).exit().remove();
       });
     });
-    if (localStorage.countiestopo && localStorage.stations && location.pathname.match(/^\/air/)) {
-      setTimeout(function(){
-        var stations;
-        drawTaiwan(JSON.parse(localStorage.countiestopo));
-        stations = JSON.parse(localStorage.stations);
-        drawAll(stations);
-        return svg.call(zoom);
-      }, 1);
-    } else {
-      d3.json("/twCounty2010.topo.json", function(countiestopo){
-        try {
-          localStorage.countiestopo = JSON.stringify(countiestopo);
-        } catch (e$) {}
-        drawTaiwan(countiestopo);
-        if (location.pathname.match(/^\/air/)) {
+    if (location.pathname.match(/^\/air/)) {
+      now = new Date().getTime();
+      (function(done){
+        var countiestopo, stations;
+        if (localStorage.countiestopo && localStorage.stations) {
+          countiestopo = JSON.parse(localStorage.countiestopo);
+          stations = JSON.parse(localStorage.stations);
+          if (countiestopo.lastUpdated && now - countiestopo.lastUpdated < 86400 * 1000 * 7) {
+            return done(countiestopo, stations);
+          }
+        }
+        return d3.json("/twCounty2010.topo.json", function(countiestopo){
+          try {
+            localStorage.countiestopo = JSON.stringify((countiestopo.lastUpdated = now, countiestopo));
+          } catch (e$) {}
           return d3.csv("/epa-site.csv", function(stations){
             try {
               localStorage.stations = JSON.stringify(stations);
             } catch (e$) {}
-            return drawAll(stations);
+            return done(countiestopo, stations);
           });
-        } else {
-          return d3.json("/stations.json", function(stations){
-            return drawAll(stations);
-          });
-        }
+        });
+      })(function(countiestopo, stations){
+        drawTaiwan(countiestopo);
+        drawAll(stations);
+        return svg.call(zoom);
+      });
+    } else {
+      d3.json("/stations.json", function(stations){
+        return drawAll(stations);
       });
     }
     if (location.pathname.match(/^\/air/)) {
