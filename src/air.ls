@@ -464,23 +464,26 @@ zoom = d3.behavior.zoom!
     canvas.scale = zoom.scale!
     plot-interpolated-data ~> wrapper.selectAll \canvas .data [0] .exit!.remove!
 
-if localStorage.countiestopo and localStorage.stations and location.pathname.match /^\/air/
-  <- setTimeout _, 1ms
-  draw-taiwan JSON.parse localStorage.countiestopo
-  stations = JSON.parse localStorage.stations
+if location.pathname.match /^\/air/
+  now = (new Date!).getTime!
+  countiestopo, stations <- (done) ->
+    if localStorage.countiestopo and localStorage.stations
+      countiestopo = JSON.parse localStorage.countiestopo
+      stations = JSON.parse localStorage.stations
+      if countiestopo.lastUpdated and now - countiestopo.lastUpdated < (86400 * 1000 * 7)
+        return done countiestopo, stations
+    countiestopo <- d3.json "/twCounty2010.topo.json"
+    try localStorage.countiestopo = JSON.stringify countiestopo <<< lastUpdated: now
+    stations <- d3.csv "/epa-site.csv"
+    try localStorage.stations = JSON.stringify stations
+    done countiestopo, stations
+
+  draw-taiwan countiestopo
   draw-all stations
   svg.call zoom
 else
-  countiestopo <- d3.json "/twCounty2010.topo.json"
-  try localStorage.countiestopo = JSON.stringify countiestopo
-  draw-taiwan countiestopo
-  if location.pathname.match /^\/air/
-    stations <- d3.csv "/epa-site.csv"
-    try localStorage.stations = JSON.stringify stations
-    draw-all stations
-  else
-    stations <- d3.json "/stations.json"
-    draw-all stations
+  stations <- d3.json "/stations.json"
+  draw-all stations
 
 
 if location.pathname.match /^\/air/
