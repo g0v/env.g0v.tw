@@ -281,7 +281,7 @@
     };
     function piped(url){
       url = replace$.call(url, /^https?:\/\//, '');
-      return "http://www.corsproxy.com/" + url;
+      return "https://cors-anywhere.herokuapp.com/" + url;
     }
     drawHeatmap = function(stations){
       var res$, i$, len$, st, val;
