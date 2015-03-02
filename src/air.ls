@@ -354,7 +354,7 @@ update-seven-segment = (value-string) ->
 
 function piped(url)
   url -= /^https?:\/\//
-  return "http://www.corsproxy.com/" + url
+  return "https://cors-anywhere.herokuapp.com/#url"
 
 #current.on \value ->
 draw-heatmap = (stations) ->
