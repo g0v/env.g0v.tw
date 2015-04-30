@@ -418,16 +418,16 @@ setup-history = ->
       x: {type : 'timeseries' }
   history.chart = chart
 
-draw-all = (_stations) ->
-
+draw-all = (_stations, aqx_url = 'http://opendata.epa.gov.tw/ws/Data/AQX/?$orderby=SiteName&$skip=0&$top=1000&format=csv' ) ->
   if location.pathname.match /^\/air/
     stations := for s in _stations
       s.lng = s.TWD97Lon
       s.lat = s.TWD97Lat
       s.name = s.SiteName
       s
-    <- d3.csv piped 'http://opendata.epa.gov.tw/ws/Data/AQX/?$orderby=SiteName&$skip=0&$top=1000&format=csv'
+    <- d3.csv piped aqx_url
     epa-data := {[e.SiteName, e] for e in it}
+    console.log epa-data
     set-metric \PM2.5
     $ \.psi .click ->
       set-metric \PSI
