@@ -365,8 +365,9 @@
       });
       return history.chart = chart;
     };
-    drawAll = function(_stations){
+    drawAll = function(_stations, aqx_url){
       var res$, i$, len$, s;
+      aqx_url == null && (aqx_url = 'http://opendata.epa.gov.tw/ws/Data/AQX/?$orderby=SiteName&$skip=0&$top=1000&format=csv');
       if (location.pathname.match(/^\/air/)) {
         res$ = [];
         for (i$ = 0, len$ = _stations.length; i$ < len$; ++i$) {
@@ -377,7 +378,7 @@
           res$.push(s);
         }
         stations = res$;
-        d3.csv(piped('http://opendata.epa.gov.tw/ws/Data/AQX/?$orderby=SiteName&$skip=0&$top=1000&format=csv'), function(it){
+        d3.csv(piped(aqx_url), function(it){
           var res$, i$, len$, e;
           res$ = {};
           for (i$ = 0, len$ = it.length; i$ < len$; ++i$) {
@@ -385,6 +386,7 @@
             res$[e.SiteName] = e;
           }
           epaData = res$;
+          console.log(epaData);
           setMetric('PM2.5');
           $('.psi').click(function(){
             return setMetric('PSI');
