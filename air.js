@@ -386,7 +386,6 @@
             res$[e.SiteName] = e;
           }
           epaData = res$;
-          console.log(epaData);
           setMetric('PM2.5');
           $('.psi').click(function(){
             return setMetric('PSI');
