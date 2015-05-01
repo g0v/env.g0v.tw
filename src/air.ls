@@ -427,7 +427,6 @@ draw-all = (_stations, aqx_url = 'http://opendata.epa.gov.tw/ws/Data/AQX/?$order
       s
     <- d3.csv piped aqx_url
     epa-data := {[e.SiteName, e] for e in it}
-    console.log epa-data
     set-metric \PM2.5
     $ \.psi .click ->
       set-metric \PSI
