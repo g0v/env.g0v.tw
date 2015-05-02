@@ -418,6 +418,14 @@ setup-history = ->
       x: {type : 'timeseries' }
   history.chart = chart
 
+aqx-csv-url-with-time = (t) ->
+  year  = t.substr 0,4
+  month = t.substr 4,2
+  day   = t.substr 6,2
+  hour  = t.substr 8,2
+  min   = t.substr 10,2
+  return "https://raw.githubusercontent.com/g0v-data/mirror-#{year}/master/epa/aqx/#{year}-#{month}-#{day}/#{hour}-#{min}.csv"
+
 draw-all = (_stations, aqx_url = 'http://opendata.epa.gov.tw/ws/Data/AQX/?$orderby=SiteName&$skip=0&$top=1000&format=csv' ) ->
   if location.pathname.match /^\/air/
     stations := for s in _stations
@@ -478,7 +486,11 @@ if location.pathname.match /^\/air/
     done countiestopo, stations
 
   draw-taiwan countiestopo
-  draw-all stations
+
+  if matched = location.search.match /[\?\&\;]t=([0-9]+)(?:[^0-9]|$)/
+    draw-all stations, aqx-csv-url-with-time matched[1]
+  else
+    draw-all stations
   svg.call zoom
 else
   stations <- d3.json "/stations.json"
