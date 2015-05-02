@@ -31,7 +31,7 @@
     }
   };
   $(function(){
-    var windowWidth, width, marginTop, height, wrapper, canvas, svg, g, history, xOff, yOff, legend, x$, minLatitude, maxLatitude, minLongitude, maxLongitude, dy, dx, proj, path, drawTaiwan, ConvertDMSToDD, drawStations, currentMetric, currentUnit, colorOf, stations, setMetric, drawSegment, addList, epaData, samples, distanceSquare, idwTrain, idwPred, yPixel, plotInterpolatedData, updateSevenSegment, drawHeatmap, setupHistory, drawAll, zoom, now;
+    var windowWidth, width, marginTop, height, wrapper, canvas, svg, g, history, xOff, yOff, legend, x$, minLatitude, maxLatitude, minLongitude, maxLongitude, dy, dx, proj, path, drawTaiwan, ConvertDMSToDD, drawStations, currentMetric, currentUnit, colorOf, stations, setMetric, drawSegment, addList, epaData, samples, distanceSquare, idwTrain, idwPred, yPixel, plotInterpolatedData, updateSevenSegment, drawHeatmap, setupHistory, aqxCsvUrlWithTime, drawAll, zoom, now;
     windowWidth = $(window).width();
     if (windowWidth > 998) {
       width = $(window).height() / 4 * 3;
@@ -365,6 +365,15 @@
       });
       return history.chart = chart;
     };
+    aqxCsvUrlWithTime = function(t){
+      var year, month, day, hour, min;
+      year = t.substr(0, 4);
+      month = t.substr(4, 2);
+      day = t.substr(6, 2);
+      hour = t.substr(8, 2);
+      min = t.substr(10, 2);
+      return "https://raw.githubusercontent.com/g0v-data/mirror-" + year + "/master/epa/aqx/" + year + "-" + month + "-" + day + "/" + hour + "-" + min + ".csv";
+    };
     drawAll = function(_stations, aqx_url){
       var res$, i$, len$, s;
       aqx_url == null && (aqx_url = 'http://opendata.epa.gov.tw/ws/Data/AQX/?$orderby=SiteName&$skip=0&$top=1000&format=csv');
@@ -451,8 +460,13 @@
           });
         });
       })(function(countiestopo, stations){
+        var matched;
         drawTaiwan(countiestopo);
-        drawAll(stations);
+        if (matched = location.search.match(/[\?\&\;]t=([0-9]+)(?:[^0-9]|$)/)) {
+          drawAll(stations, aqxCsvUrlWithTime(matched[1]));
+        } else {
+          drawAll(stations);
+        }
         return svg.call(zoom);
       });
     } else {
