@@ -371,6 +371,10 @@ draw-heatmap = (stations) ->
     continue if isNaN val
     [+st.lng, +st.lat, val]
 
+  while samples.length > 100
+    samples := for st in samples when (Math.random! > 0.5)
+      st
+
   # update station's value
   svg.selectAll \circle
     .data stations
