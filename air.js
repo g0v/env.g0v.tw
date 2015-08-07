@@ -300,6 +300,16 @@
         }
       }
       samples = res$;
+      while (samples.length > 100) {
+        res$ = [];
+        for (i$ = 0, len$ = samples.length; i$ < len$; ++i$) {
+          st = samples[i$];
+          if (Math.random() > 0.5) {
+            res$.push(st);
+          }
+        }
+        samples = res$;
+      }
       svg.selectAll('circle').data(stations).style('fill', function(st){
         return '#FFFFFF';
       }).on('mouseover', function(d, i){
