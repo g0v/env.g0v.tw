@@ -386,7 +386,7 @@
     };
     drawAll = function(_stations, aqx_url){
       var res$, i$, len$, s;
-      aqx_url == null && (aqx_url = 'http://opendata.epa.gov.tw/ws/Data/AQX/?$orderby=SiteName&$skip=0&$top=1000&format=csv');
+      aqx_url == null && (aqx_url = 'http://g0v-data-mirror.gugod.org/epa/aqx.csv');
       if (location.pathname.match(/^\/air/)) {
         res$ = [];
         for (i$ = 0, len$ = _stations.length; i$ < len$; ++i$) {
@@ -449,7 +449,8 @@
     });
     if (location.pathname.match(/^\/air/)) {
       now = new Date().getTime();
-      (function(done){
+      setupHistory();
+      return function(done){
         var countiestopo, stations;
         if (localStorage.countiestopo && localStorage.stations) {
           countiestopo = JSON.parse(localStorage.countiestopo);
@@ -469,7 +470,7 @@
             return done(countiestopo, stations);
           });
         });
-      })(function(countiestopo, stations){
+      }(function(countiestopo, stations){
         var matched;
         drawTaiwan(countiestopo);
         if (matched = location.search.match(/[\?\&\;]t=([0-9]+)(?:[^0-9]|$)/)) {
@@ -480,20 +481,8 @@
         return svg.call(zoom);
       });
     } else {
-      d3.json("/stations.json", function(stations){
+      return d3.json("/stations.json", function(stations){
         return drawAll(stations);
-      });
-    }
-    if (location.pathname.match(/^\/air/)) {
-      setupHistory();
-      return d3.csv(piped('http://opendata.epa.gov.tw/ws/Data/AQF/?$orderby=AreaName&$skip=0&$top=1000&format=csv'), function(forecast){
-        var first;
-        if (!forecast) {
-          return;
-        }
-        first = forecast[0];
-        d3.select('#forecast').text(first.Content);
-        return d3.select('#info-panel').text(first.Content);
       });
     }
   });
