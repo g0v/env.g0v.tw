@@ -430,7 +430,8 @@ aqx-csv-url-with-time = (t) ->
   min   = t.substr 10,2
   return "https://raw.githubusercontent.com/g0v-data/mirror-#{year}/master/epa/aqx/#{year}-#{month}-#{day}/#{hour}-#{min}.csv"
 
-draw-all = (_stations, aqx_url = 'http://opendata.epa.gov.tw/ws/Data/AQX/?$orderby=SiteName&$skip=0&$top=1000&format=csv' ) ->
+# original aqx_url: http://opendata.epa.gov.tw/ws/Data/AQX/?$orderby=SiteName&$skip=0&$top=1000&format=csv
+draw-all = (_stations, aqx_url = 'http://g0v-data-mirror.gugod.org/epa/aqx.csv' ) ->
   if location.pathname.match /^\/air/
     stations := for s in _stations
       s.lng = s.TWD97Lon
@@ -504,7 +505,8 @@ else
 if location.pathname.match /^\/air/
   setup-history!
   do
-    forecast <- d3.csv piped 'http://opendata.epa.gov.tw/ws/Data/AQF/?$orderby=AreaName&$skip=0&$top=1000&format=csv'
+    # original url: http://opendata.epa.gov.tw/ws/Data/AQF/?$orderby=AreaName&$skip=0&$top=1000&format=csv
+    forecast <- d3.csv piped 'http://g0v-data-mirror.gugod.org/epa/aqx.csv'
     return unless forecast
     first = forecast[0]
     d3.select \#forecast
