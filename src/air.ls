@@ -478,6 +478,7 @@ zoom = d3.behavior.zoom!
 
 if location.pathname.match /^\/air/
   now = (new Date!).getTime!
+  setup-history!
   countiestopo, stations <- (done) ->
     if localStorage.countiestopo and localStorage.stations
       countiestopo = JSON.parse localStorage.countiestopo
@@ -500,16 +501,3 @@ if location.pathname.match /^\/air/
 else
   stations <- d3.json "/stations.json"
   draw-all stations
-
-
-if location.pathname.match /^\/air/
-  setup-history!
-  do
-    # original url: http://opendata.epa.gov.tw/ws/Data/AQF/?$orderby=AreaName&$skip=0&$top=1000&format=csv
-    forecast <- d3.csv piped 'http://g0v-data-mirror.gugod.org/epa/aqx.csv'
-    return unless forecast
-    first = forecast[0]
-    d3.select \#forecast
-      .text first.Content
-    d3.select \#info-panel
-      .text first.Content
