@@ -281,7 +281,11 @@
     };
     function piped(url){
       url = replace$.call(url, /^https?:\/\//, '');
-      return "https://cors-anywhere.herokuapp.com/" + url;
+      if ((new Date).getUTCHours() < 12) {
+        return "https://envg0vtw-cors-dayshift.herokuapp.com/" + url;
+      } else {
+        return "https://envg0vtw-cors-nightshift.herokuapp.com/" + url;
+      }
     }
     drawHeatmap = function(stations){
       var res$, i$, len$, st, val;
