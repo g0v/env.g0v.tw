@@ -354,7 +354,11 @@ update-seven-segment = (value-string) ->
 
 function piped(url)
   url -= /^https?:\/\//
-  return "https://cors-anywhere.herokuapp.com/#url"
+  if (new Date).getUTCHours! < 12
+    return "https://envg0vtw-cors-dayshift.herokuapp.com/#url"
+  else
+    return "https://envg0vtw-cors-nightshift.herokuapp.com/#url"
+
 
 #current.on \value ->
 draw-heatmap = (stations) ->
