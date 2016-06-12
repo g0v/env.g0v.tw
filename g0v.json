@@ -1,24 +1,23 @@
 {
-  "author": "clkao",
-  "status": "alpha",
   "name": "env.g0v.tw",
+  "name_zh": "台灣環境儀表板",
+  "status": "Alpha",
+  "tags": [
+    "environment",
+    "air quality"
+  ],
+  "license": "CC0-1.0",
+  "author": "clkao",
   "description": "Taiwan environment dashboard",
-  "description_zh": "台灣環境顯示儀。",
+  "description_zh": "台灣環境儀表板",
+
   "homepage": "http://env.g0v.tw/",
   "document": "",
   "repository": {
     "type": "git",
     "url": "https://github.com/g0v/env.g0v.tw"
   },
-  "licenses": [
-    {
-      "type": "CC0"
-    }
-  ],
-  "keywords": [
-    "environment",
-    "air quality"
-  ],
+
   "audience": [
     "developer"
   ],
