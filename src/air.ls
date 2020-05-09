@@ -77,6 +77,8 @@ history = d3.select \#history
 x-off = width - 100 - 40
 y-off = height - (32*7) - 40
 
+console.log x-off
+
 legend = svg.append \g
   .attr \class, \legend
   .attr "transform" ->
@@ -428,7 +430,8 @@ aqx-csv-url-with-time = (t) ->
   day   = t.substr 6,2
   hour  = t.substr 8,2
   min   = t.substr 10,2
-  return "https://raw.githubusercontent.com/g0v-data/mirror-#{year}/master/epa/aqx/#{year}-#{month}-#{day}/#{hour}-#{min}.csv"
+  return "https://opendata.epa.gov.tw/api/v1/PM25?%24skip=0&%24top=1000&%24format=csv"
+  # return "https://raw.githubusercontent.com/g0v-data/mirror-#{year}/master/epa/aqx/#{year}-#{month}-#{day}/#{hour}-#{min}.csv"
 
 # original aqx_url: http://opendata.epa.gov.tw/ws/Data/AQX/?$orderby=SiteName&$skip=0&$top=1000&format=csv
 draw-all = (_stations, aqx_url = 'http://g0v-data-mirror.gugod.org/epa/aqx.csv' ) ->
