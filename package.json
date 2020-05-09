@@ -25,7 +25,7 @@
     "gulp-util": "~2.2.14",
     "gulp-stylus": "~0.0.12",
     "gulp-jade": "~0.4.1",
-    "express": "~3.4.8",
+    "express": "~3.11.0",
     "gulp": "~3.5.2",
     "connect-livereload": "~0.3.2",
     "gulp-livereload": "~1.1.1"
